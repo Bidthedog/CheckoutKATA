@@ -71,13 +71,25 @@ namespace KATA.Services {
                     continue;
                 }
 
-                // Extract all discounts for this SKU
+                // Extract all discounts for this SKU.
                 // This should be abstracted to a DiscountService and mocked
                 var discounts = _discounts?.FirstOrDefault(d => d.Key == sku).Value;
 
-                // Find the specific discount for the selected amount.
-                // The below lookup may change for date-based discounts
-                var discount = discounts?.FirstOrDefault(d => d.Amount == amount);
+                // Find the specific discount for the selected amount and check its dates.
+                // The below logic can be made more complex, depending on the rules surrounding
+                // how StartDate and EndDate nulls are handled. At the moment, both dates must be
+                // populated for them to be applied. It also does not cater for more than one entry
+                // with the same amount configured (as 'amount' is not a key).
+                // It currently ignores discounts that are only configured with one date populated.
+                // Redundant parentheses are included for clarity.
+                var discount = discounts?
+                    .FirstOrDefault(d => d.Amount == amount
+                                         && (
+                                             (!d.StartDate.HasValue && !d.EndDate.HasValue)
+                                             || (d.StartDate.HasValue && d.EndDate.HasValue
+                                                                      && SystemTime.Now() > d.StartDate
+                                                                      && SystemTime.Now() < d.EndDate)
+                                         ));
                 if(discount != null) {
                     totalPrice += discount.TotalPrice;
                 } else {
