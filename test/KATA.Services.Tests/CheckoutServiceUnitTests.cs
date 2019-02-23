@@ -75,6 +75,36 @@ namespace KATA.Services.Tests {
             Assert.Equal(130, total);
         }
 
+        [Fact]
+        public void MultipleScansOfTheSameSKU_ReturnExpectedTotal() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var service = GetService(readOnlyPrices);
+
+            // Act
+            service.Scan("A", 1);
+            service.Scan("A", 1);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(100, total);
+        }
+
+        [Fact]
+        public void MultipleScansOfTheSameSKU_ThatMatchesDiscountedAmount_ReturnExpectedTotal() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var service = GetService(readOnlyPrices);
+
+            // Act
+            service.Scan("A", 1);
+            service.Scan("A", 2);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(130, total);
+        }
+
         #region Helper methods
 
         /// <summary>
