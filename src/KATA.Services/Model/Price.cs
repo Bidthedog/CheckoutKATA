@@ -9,16 +9,17 @@
         /// <param name="sku"></param>
         /// <param name="price"></param>
         public Price(string sku, decimal price) {
+            SKU = sku;
         }
 
         /// <summary>
         ///     The product's SKU
         /// </summary>
-        public string SKU { get; private set; }
+        public string SKU { get; }
 
         /// <summary>
         ///     The product's price
         /// </summary>
-        public decimal UnitPrice { get; private set; }
+        public decimal UnitPrice { get; }
     }
 }
