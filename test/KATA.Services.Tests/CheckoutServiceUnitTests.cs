@@ -26,10 +26,7 @@ namespace KATA.Services.Tests {
         [Fact]
         public void SingleItem_ScansAsExpectedUnitPrice() {
             // Arrange
-            var prices = new Dictionary<string, Price> {
-                {"A", new Price(50)}
-            };
-            var readOnlyPrices = new ReadOnlyDictionary<string, Price>(prices);
+            var readOnlyPrices = GetMockedPrices();
             var service = GetService(readOnlyPrices);
 
             // Act
@@ -43,14 +40,25 @@ namespace KATA.Services.Tests {
         [Fact]
         public void SingleItem_ThrowsExceptionWhenSKUNotFound() {
             // Arrange
-            var prices = new Dictionary<string, Price> {
-                {"A", new Price(50)}
-            };
-            var readOnlyPrices = new ReadOnlyDictionary<string, Price>(prices);
+            var readOnlyPrices = GetMockedPrices();
             var service = GetService(readOnlyPrices);
 
             // Act & Assert
             Assert.Throws<SKUNotFoundException>(() => service.Scan("B", 1));
         }
+
+        #region Helper methods
+
+        /// <summary>
+        ///     Mocked prices. We don't need to implement all prices as the test are abstract.
+        /// </summary>
+        private static ReadOnlyDictionary<string, Price> GetMockedPrices() {
+            var prices = new Dictionary<string, Price> {
+                {"A", new Price(50, null)}
+            };
+            return new ReadOnlyDictionary<string, Price>(prices);
+        }
+
+        #endregion
     }
 }
