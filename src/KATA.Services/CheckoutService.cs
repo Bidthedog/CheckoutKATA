@@ -41,7 +41,7 @@ namespace KATA.Services {
                 if(discount != null) {
                     _totalPrice += discount.TotalPrice;
                 } else {
-                    _totalPrice += price.UnitPrice;
+                    _totalPrice += price.UnitPrice * amount;
                 }
             } else {
                 throw new SKUNotFoundException();
