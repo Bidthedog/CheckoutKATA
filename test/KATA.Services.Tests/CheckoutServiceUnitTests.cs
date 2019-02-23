@@ -38,6 +38,20 @@ namespace KATA.Services.Tests {
         }
 
         [Fact]
+        public void MultiItem_ScansAsExpectedUnitPrice() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var service = GetService(readOnlyPrices);
+
+            // Act
+            service.Scan("A", 2);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(100, total);
+        }
+
+        [Fact]
         public void SingleItem_ThrowsExceptionWhenSKUNotFound() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
