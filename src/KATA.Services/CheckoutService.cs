@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 using KATA.Services.Contracts;
 using KATA.Services.Exceptions;
@@ -35,7 +36,13 @@ namespace KATA.Services {
         /// <param name="amount"></param>
         public void Scan(string sku, int amount) {
             if(_prices.TryGetValue(sku, out var price)) {
-                _totalPrice += price.UnitPrice;
+                var discount = price.Discounts?.FirstOrDefault(d => d.Amount == amount);
+
+                if(discount != null) {
+                    _totalPrice += discount.TotalPrice;
+                } else {
+                    _totalPrice += price.UnitPrice;
+                }
             } else {
                 throw new SKUNotFoundException();
             }
