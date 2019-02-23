@@ -16,5 +16,14 @@ namespace KATA.Services.Tests {
             // Assert
             Assert.Equal("A", price.SKU);
         }
+
+        [Fact]
+        public void SetsUnitPrice_OnInstantiation() {
+            // Arrange  & Act
+            var price = new Price("A", 56);
+
+            // Assert
+            Assert.Equal(56, price.UnitPrice);
+        }
     }
 }
