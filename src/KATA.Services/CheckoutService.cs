@@ -11,21 +11,29 @@ namespace KATA.Services {
     /// </summary>
     public class CheckoutService : ICheckoutService {
         /// <summary>
-        ///     Private field for price list
+        ///     A dictionary of SKUs and their unit prices
         /// </summary>
-        private readonly IReadOnlyDictionary<string, Price> _prices;
+        private readonly IReadOnlyDictionary<string, decimal> _prices;
 
         /// <summary>
-        ///     Contains the total price of all the items scanned at the checkout
+        ///     A dictionary of SKUs and their discount properties
         /// </summary>
-        private decimal _totalPrice;
+        private readonly IReadOnlyDictionary<string, IEnumerable<Discount>> _discounts;
 
         /// <summary>
-        ///     Instantiates the <see cref="CheckoutService" /> that depends on the specified <see cref="Price" /> dictionary.
+        ///     Shopping cart tracking for deferred discount calculation
+        /// </summary>
+        private readonly IDictionary<string, int> _cart = new Dictionary<string, int>();
+
+        /// <summary>
+        ///     Instantiates the <see cref="CheckoutService" /> that depends on the specified <paramref name="prices" /> and
+        ///     <paramref name="discounts" />.
         /// </summary>
         /// <param name="prices"></param>
-        public CheckoutService(IReadOnlyDictionary<string, Price> prices) {
+        /// <param name="discounts"></param>
+        public CheckoutService(IReadOnlyDictionary<string, decimal> prices, IReadOnlyDictionary<string, IEnumerable<Discount>> discounts) {
             _prices = prices;
+            _discounts = discounts;
         }
 
         /// <summary>
@@ -35,13 +43,11 @@ namespace KATA.Services {
         /// <param name="sku"></param>
         /// <param name="amount"></param>
         public void Scan(string sku, int amount) {
-            if(_prices.TryGetValue(sku, out var price)) {
-                var discount = price.Discounts?.FirstOrDefault(d => d.Amount == amount);
-
-                if(discount != null) {
-                    _totalPrice += discount.TotalPrice;
+            if(_prices.ContainsKey(sku)) {
+                if(!_cart.ContainsKey(sku)) {
+                    _cart.Add(sku, amount);
                 } else {
-                    _totalPrice += price.UnitPrice * amount;
+                    _cart[sku] += amount;
                 }
             } else {
                 throw new SKUNotFoundException();
@@ -53,7 +59,33 @@ namespace KATA.Services {
         /// </summary>
         /// <returns></returns>
         public decimal GetTotal() {
-            return _totalPrice;
+            var totalPrice = 0m;
+
+            // This implementation does not cater for discounts that need to be calculated at Scan time (which will depend on the policy of the seller).
+            foreach(var item in _cart) {
+                var sku = item.Key;
+                var amount = item.Value;
+                if(!_prices.TryGetValue(sku, out var unitPrice)) {
+                    // Unlikely to hit this unless price list is mutated, as
+                    // the Scan() method checks for existing SKUs
+                    continue;
+                }
+
+                // Extract all discounts for this SKU
+                // This should be abstracted to a DiscountService and mocked
+                var discounts = _discounts?.FirstOrDefault(d => d.Key == sku).Value;
+
+                // Find the specific discount for the selected amount.
+                // The below lookup may change for date-based discounts
+                var discount = discounts?.FirstOrDefault(d => d.Amount == amount);
+                if(discount != null) {
+                    totalPrice += discount.TotalPrice;
+                } else {
+                    totalPrice += unitPrice * amount;
+                }
+            }
+
+            return totalPrice;
         }
     }
 }

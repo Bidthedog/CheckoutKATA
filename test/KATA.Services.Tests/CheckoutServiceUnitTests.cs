@@ -18,16 +18,18 @@ namespace KATA.Services.Tests {
         ///     dependencies during TDD.
         /// </summary>
         /// <param name="prices">A complete list of prices available to the service</param>
+        /// <param name="discounts">A complete list of discounts available for each SKU</param>
         /// <returns></returns>
-        private static ICheckoutService GetService(IReadOnlyDictionary<string, Price> prices) {
-            return new CheckoutService(prices);
+        private static ICheckoutService GetService(IReadOnlyDictionary<string, decimal> prices, IReadOnlyDictionary<string, IEnumerable<Discount>> discounts) {
+            return new CheckoutService(prices, discounts);
         }
 
         [Fact]
         public void SingleItem_ScansAsExpectedUnitPrice() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
-            var service = GetService(readOnlyPrices);
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
 
             // Act
             service.Scan("A", 1);
@@ -41,7 +43,8 @@ namespace KATA.Services.Tests {
         public void MultiItem_ScansAsExpectedUnitPrice() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
-            var service = GetService(readOnlyPrices);
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
 
             // Act
             service.Scan("A", 2);
@@ -55,7 +58,8 @@ namespace KATA.Services.Tests {
         public void SingleItem_ThrowsExceptionWhenSKUNotFound() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
-            var service = GetService(readOnlyPrices);
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
 
             // Act & Assert
             Assert.Throws<SKUNotFoundException>(() => service.Scan("B", 1));
@@ -65,7 +69,8 @@ namespace KATA.Services.Tests {
         public void AppliesDiscount_WhenAmountIsInDiscountList() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
-            var service = GetService(readOnlyPrices);
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
 
             // Act
             service.Scan("A", 3);
@@ -79,7 +84,8 @@ namespace KATA.Services.Tests {
         public void MultipleScansOfTheSameSKU_ReturnExpectedTotal() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
-            var service = GetService(readOnlyPrices);
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
 
             // Act
             service.Scan("A", 1);
@@ -94,7 +100,8 @@ namespace KATA.Services.Tests {
         public void MultipleScansOfTheSameSKU_ThatMatchesDiscountedAmount_ReturnExpectedTotal() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
-            var service = GetService(readOnlyPrices);
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
 
             // Act
             service.Scan("A", 1);
@@ -110,15 +117,22 @@ namespace KATA.Services.Tests {
         /// <summary>
         ///     Mocked prices. We don't need to implement all prices as the test are abstract.
         /// </summary>
-        private static ReadOnlyDictionary<string, Price> GetMockedPrices() {
-            var prices = new Dictionary<string, Price> {
-                {
-                    "A", new Price(50, new List<PriceDiscount> {
-                        new PriceDiscount(3, 130)
-                    })
-                }
+        private static ReadOnlyDictionary<string, decimal> GetMockedPrices() {
+            var prices = new Dictionary<string, decimal> {
+                {"A", 50}
             };
-            return new ReadOnlyDictionary<string, Price>(prices);
+            return new ReadOnlyDictionary<string, decimal>(prices);
+        }
+
+        /// <summary>
+        ///     Mocked discounts. We don't need to implement all discounts as the tests are abstract.
+        /// </summary>
+        /// <returns></returns>
+        private static ReadOnlyDictionary<string, IEnumerable<Discount>> GetMockedDiscounts() {
+            var discounts = new Dictionary<string, IEnumerable<Discount>> {
+                {"A", new List<Discount> {new Discount(3, 130)}}
+            };
+            return new ReadOnlyDictionary<string, IEnumerable<Discount>>(discounts);
         }
 
         #endregion

@@ -4,13 +4,13 @@
     ///     but the KATA specifies that discounts are only based on multiples of specific SKUs. I have not implemented tests
     ///     for this class as this is demonstrated in the <see cref="Price" /> class.
     /// </summary>
-    public class PriceDiscount {
+    public class Discount {
         /// <summary>
         ///     Instantiates a discount with the specified <paramref name="amount" /> and <paramref name="totalPrice" />
         /// </summary>
         /// <param name="amount"></param>
         /// <param name="totalPrice"></param>
-        public PriceDiscount(int amount, decimal totalPrice) {
+        public Discount(int amount, decimal totalPrice) {
             Amount = amount;
             TotalPrice = totalPrice;
         }
