@@ -6,18 +6,11 @@
         /// <summary>
         ///     Creates a new <see cref="Price" />
         /// </summary>
-        /// <param name="sku">Read-only. The product's SKU</param>
         /// <param name="price">Read-only. The product's Unit Price</param>
-        public Price(string sku, decimal price) {
-            SKU = sku;
+        public Price(decimal price) {
             UnitPrice = price;
         }
-
-        /// <summary>
-        ///     The product's SKU
-        /// </summary>
-        public string SKU { get; }
-
+        
         /// <summary>
         ///     The product's price
         /// </summary>

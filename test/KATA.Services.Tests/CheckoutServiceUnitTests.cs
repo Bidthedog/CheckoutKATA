@@ -1,7 +1,42 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+using KATA.Services.Contracts;
+using KATA.Services.Model;
+
+using Xunit;
+
 namespace KATA.Services.Tests {
     /// <summary>
     ///     Performs unit tests on the <see cref="CheckoutService" />
     /// </summary>
     public class CheckoutServiceUnitTests {
+        /// <summary>
+        ///     Returns a <see cref="CheckoutService" /> (as an <see cref="ICheckoutService" /> in order to verify that the
+        ///     contract has also been updated) with default dependencies. Abstracted into its own method to simplify updating
+        ///     dependencies during TDD.
+        /// </summary>
+        /// <param name="prices">A complete list of prices available to the service</param>
+        /// <returns></returns>
+        private static ICheckoutService GetService(IReadOnlyDictionary<string, Price> prices) {
+            return new CheckoutService(prices);
+        }
+
+        [Fact]
+        public void SingleItem_ScansAsExpectedUnitPrice() {
+            // Arrange
+            var prices = new Dictionary<string, Price> {
+                {"A", new Price(50)}
+            };
+            var readOnlyPrices = new ReadOnlyDictionary<string, Price>(prices);
+            var service = GetService(readOnlyPrices);
+
+            // Act
+            service.Scan("A", 1);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(50, total);
+        }
     }
 }

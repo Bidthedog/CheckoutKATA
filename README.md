@@ -2,6 +2,8 @@
 
 Checkout KATA test implemented by [Chris Sebok](https://github.com/Bidthedog) as per the below spec and guidelines:
 
+Granular commits are for demonstration purposes only; commits would normally consist of a full unit test and implementation, including some dependency modifications. Also, I would not normally fully test POCO classes as much as demonstrated in this repository. I would also normally branch using gitflow for feature updates.
+
 # Specification
 
 ## Checkout Kata

@@ -9,7 +9,11 @@ namespace KATA.Services {
     ///     Implements the <see cref="ICheckoutService" />
     /// </summary>
     public class CheckoutService : ICheckoutService {
-        public CheckoutService(IEnumerable<Price> prices) {
+        /// <summary>
+        ///     Instantiates the <see cref="CheckoutService" /> that depends on the specified <see cref="Price" /> dictionary.
+        /// </summary>
+        /// <param name="prices"></param>
+        public CheckoutService(IReadOnlyDictionary<string, Price> prices) {
         }
 
         public void Scan(string sku, int amount) {

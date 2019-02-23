@@ -9,18 +9,9 @@ namespace KATA.Services.Tests {
     /// </summary>
     public class PriceUnitTests {
         [Fact]
-        public void SetsSKU_OnInstantiation() {
-            // Arrange  & Act
-            var price = new Price("A", 0);
-
-            // Assert
-            Assert.Equal("A", price.SKU);
-        }
-
-        [Fact]
         public void SetsUnitPrice_OnInstantiation() {
             // Arrange  & Act
-            var price = new Price("A", 56);
+            var price = new Price(56);
 
             // Assert
             Assert.Equal(56, price.UnitPrice);
