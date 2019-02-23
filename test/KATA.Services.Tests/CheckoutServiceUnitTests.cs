@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -111,6 +112,28 @@ namespace KATA.Services.Tests {
             // Assert
             Assert.Equal(130, total);
         }
+
+        [Fact]
+        public void DoesNotApplyDiscount_WhenAmountIsInDiscountListButCurrentDateIsOutsideExpectedRange() {
+            // Arrange
+            SystemTime.Now = () => new DateTime(2019, 2, 23);
+            var readOnlyPrices = GetMockedPrices();
+            var discounts = new Dictionary<string, IEnumerable<Discount>> {
+                {"A", new List<Discount> {
+                    new Discount(3, 130, new DateTime(2019, 1, 1), new DateTime(2019, 2, 22))
+                }}
+            };
+            var readOnlyDiscounts = new ReadOnlyDictionary<string, IEnumerable<Discount>>(discounts);
+            var service = GetService(readOnlyPrices, readOnlyDiscounts);
+
+            // Act
+            service.Scan("A", 3);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(150, total);
+        }
+
 
         #region Helper methods
 

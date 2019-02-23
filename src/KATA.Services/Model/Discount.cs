@@ -1,8 +1,9 @@
-﻿namespace KATA.Services.Model {
+﻿using System;
+
+namespace KATA.Services.Model {
     /// <summary>
     ///     Basic discount class - this could be abstracted out into a fully-fledged, dynamic pricing table with its own DSL,
-    ///     but the KATA specifies that discounts are only based on multiples of specific SKUs. I have not implemented tests
-    ///     for this class as this is demonstrated in the <see cref="Price" /> class.
+    ///     but the KATA specifies that discounts are only based on multiples of specific SKUs.
     /// </summary>
     public class Discount {
         /// <summary>
@@ -10,9 +11,13 @@
         /// </summary>
         /// <param name="amount"></param>
         /// <param name="totalPrice"></param>
-        public Discount(int amount, decimal totalPrice) {
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        public Discount(int amount, decimal totalPrice, DateTime? startDate = null, DateTime? endDate = null) {
             Amount = amount;
             TotalPrice = totalPrice;
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
         /// <summary>
@@ -24,5 +29,15 @@
         ///     The total price that should be returned when this amount is returned
         /// </summary>
         public decimal TotalPrice { get; }
+
+        /// <summary>
+        ///     Inclusive start date of when the discount should be applied
+        /// </summary>
+        public DateTime? StartDate { get; }
+
+        /// <summary>
+        ///     Inclusive end date of when the discount should be applied
+        /// </summary>
+        public DateTime? EndDate { get; }
     }
 }
