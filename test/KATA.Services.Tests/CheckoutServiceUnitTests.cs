@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using KATA.Services.Contracts;
+using KATA.Services.Exceptions;
 using KATA.Services.Model;
 
 using Xunit;
@@ -37,6 +38,19 @@ namespace KATA.Services.Tests {
 
             // Assert
             Assert.Equal(50, total);
+        }
+
+        [Fact]
+        public void SingleItem_ThrowsExceptionWhenSKUNotFound() {
+            // Arrange
+            var prices = new Dictionary<string, Price> {
+                {"A", new Price(50)}
+            };
+            var readOnlyPrices = new ReadOnlyDictionary<string, Price>(prices);
+            var service = GetService(readOnlyPrices);
+
+            // Act & Assert
+            Assert.Throws<SKUNotFoundException>(() => service.Scan("B", 1));
         }
     }
 }
