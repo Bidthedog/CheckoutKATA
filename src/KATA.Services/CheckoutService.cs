@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using KATA.Services.Contracts;
@@ -61,37 +62,48 @@ namespace KATA.Services {
         public decimal GetTotal() {
             var totalPrice = 0m;
 
-            // This implementation does not cater for discounts that need to be calculated at Scan time (which will depend on the policy of the seller).
+            // This implementation does not cater for discounts that may need to be calculated
+            // at Scan() time (which will depend on the policy of the seller). All calculations
+            // are currently deferred until this method is called. The KATA spec does not
+            // highlight which is preferred.
             foreach(var item in _cart) {
                 var sku = item.Key;
                 var amount = item.Value;
                 if(!_prices.TryGetValue(sku, out var unitPrice)) {
-                    // Unlikely to hit this unless price list is mutated, as
-                    // the Scan() method checks for existing SKUs
+                    // Unlikely to hit this unless price list is mutated before GetTotal() is
+                    // called, as the Scan() method checks that SKUs exist.
                     continue;
                 }
 
                 // Extract all discounts for this SKU.
-                // This should be abstracted to a DiscountService and mocked
+                // All the below discount calculations should be extracted to a separate
+                // service dependency and mocked to make the CheckoutServiceUnitTests simpler
                 var discounts = _discounts?.FirstOrDefault(d => d.Key == sku).Value;
 
-                // Find the specific discount for the selected amount and check its dates.
+                // Discover if there is at least one discount for this SKU that should be applied
+                // at the moment (date based discounts).
                 // The below logic can be made more complex, depending on the rules surrounding
                 // how StartDate and EndDate nulls are handled. At the moment, both dates must be
-                // populated for them to be applied. It also does not cater for more than one entry
-                // with the same amount configured (as 'amount' is not a key).
-                // It currently ignores discounts that are only configured with one date populated.
-                // Redundant parentheses are included for clarity.
+                // populated for them to be applied, or both must be null. It currently ignores
+                // discounts that are configured with only one date populated.
+
+                // This lambda does not cater for multiple discounts that may exist for the same date
+                // range.
+
+                // Redundant parentheses are included for clarity / sanity. BODMAS yadda yadda.
                 var discount = discounts?
-                    .FirstOrDefault(d => d.Amount == amount
-                                         && (
-                                             (!d.StartDate.HasValue && !d.EndDate.HasValue)
-                                             || (d.StartDate.HasValue && d.EndDate.HasValue
-                                                                      && SystemTime.Now() > d.StartDate
-                                                                      && SystemTime.Now() < d.EndDate)
-                                         ));
-                if(discount != null) {
-                    totalPrice += discount.TotalPrice;
+                    .FirstOrDefault(d =>
+                        (!d.StartDate.HasValue && !d.EndDate.HasValue)
+                        || (d.StartDate.HasValue && d.EndDate.HasValue
+                                                 && SystemTime.Now() > d.StartDate
+                                                 && SystemTime.Now() < d.EndDate)
+                    );
+
+                if(discount != null && amount >= discount.Amount) {
+                    var noDiscounts = amount / discount.Amount;
+                    var noRemainingUnits = amount % discount.Amount;
+
+                    totalPrice += ((discount.TotalPrice) * noDiscounts) + (unitPrice * noRemainingUnits);
                 } else {
                     totalPrice += unitPrice * amount;
                 }

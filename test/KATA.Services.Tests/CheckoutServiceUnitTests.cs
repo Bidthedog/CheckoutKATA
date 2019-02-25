@@ -26,7 +26,21 @@ namespace KATA.Services.Tests {
         }
 
         [Fact]
-        public void SingleItem_ScansAsExpectedUnitPrice() {
+        public void SingleItem_ScansAsExpectedUnitPrice_WhenNoDiscountExists() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var service = GetService(readOnlyPrices, null);
+
+            // Act
+            service.Scan("A", 1);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(50, total);
+        }
+
+        [Fact]
+        public void SingleItem_ScansAsExpectedUnitPrice_WhenDiscountExists() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
             var discounts = GetMockedDiscounts();
@@ -41,11 +55,25 @@ namespace KATA.Services.Tests {
         }
 
         [Fact]
-        public void MultiItem_ScansAsExpectedUnitPrice() {
+        public void MultiItem_ScansAsExpectedUnitPrice_WhenDiscountExists() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
             var discounts = GetMockedDiscounts();
             var service = GetService(readOnlyPrices, discounts);
+
+            // Act
+            service.Scan("A", 2);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(100, total);
+        }
+
+        [Fact]
+        public void MultiItem_ScansAsExpectedUnitPrice_WhenNoDiscountExists() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var service = GetService(readOnlyPrices, null);
 
             // Act
             service.Scan("A", 2);
@@ -82,11 +110,26 @@ namespace KATA.Services.Tests {
         }
 
         [Fact]
-        public void MultipleScansOfTheSameSKU_ReturnExpectedTotal() {
+        public void MultipleScansOfTheSameSKU_ReturnExpectedTotal_WhenDiscountExists() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
             var discounts = GetMockedDiscounts();
             var service = GetService(readOnlyPrices, discounts);
+
+            // Act
+            service.Scan("A", 1);
+            service.Scan("A", 1);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(100, total);
+        }
+
+        [Fact]
+        public void MultipleScansOfTheSameSKU_ReturnExpectedTotal_WhenNoDiscountExists() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var service = GetService(readOnlyPrices, null);
 
             // Act
             service.Scan("A", 1);
@@ -111,6 +154,41 @@ namespace KATA.Services.Tests {
 
             // Assert
             Assert.Equal(130, total);
+        }
+
+        [Fact]
+        public void MultiplesOfDiscount_ApplyExpectedDiscounts() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
+
+            // Act
+            service.Scan("A", 1);
+            service.Scan("A", 2);
+            service.Scan("A", 3);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(260, total);
+        }
+
+        [Fact]
+        public void MultiplesOfDiscount_WithRemainder_AppliesExpectedDiscounts() {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
+
+            // Act
+            service.Scan("A", 1);
+            service.Scan("A", 2);
+            service.Scan("A", 3);
+            service.Scan("A", 1);
+            var total = service.GetTotal();
+
+            // Assert
+            Assert.Equal(310, total);
         }
 
         [Fact]

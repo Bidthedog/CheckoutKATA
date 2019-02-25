@@ -1,8 +1,8 @@
 # KATA Checkout Service
 
-Checkout KATA test implemented by [Chris Sebok](https://github.com/Bidthedog) as per the below spec and guidelines:
+Checkout KATA test implemented by [Chris Sebok](https://github.com/Bidthedog) as per the below spec and guidelines.
 
-Granular commits are for demonstration purposes only; commits would normally consist of a full unit test and implementation, including some dependency modifications. Also, I would not normally fully test POCO classes as much as demonstrated in this repository. I would also normally branch using gitflow for feature updates.
+Granular commits are for demonstration purposes only; commits would normally consist of a full unit test and implementation, including some dependency modifications. I would also normally branch using gitflow for feature updates, and use a mocking framework like Moq instead of hard-coded dependencies.
 
 # Specification
 
