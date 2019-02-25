@@ -12,17 +12,17 @@ namespace KATA.Services {
     /// </summary>
     public class CheckoutService : ICheckoutService {
         /// <summary>
-        ///     A dictionary of SKUs and their unit prices
+        ///     A dictionary of SKUs and their unit prices. Key = SKU, Value = Single Unit Price
         /// </summary>
         private readonly IReadOnlyDictionary<string, decimal> _prices;
 
         /// <summary>
-        ///     A dictionary of SKUs and their discount properties
+        ///     A dictionary of SKUs and their discount properties. Key = SKU.
         /// </summary>
         private readonly IReadOnlyDictionary<string, IEnumerable<Discount>> _discounts;
 
         /// <summary>
-        ///     Shopping cart tracking for deferred discount calculation
+        ///     Shopping cart tracking for deferred discount calculation. Key = SKU, value = amount.
         /// </summary>
         private readonly IDictionary<string, int> _cart = new Dictionary<string, int>();
 
