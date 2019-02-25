@@ -84,7 +84,7 @@ namespace KATA.Services.Tests {
         }
 
         [Fact]
-        public void SingleItem_ThrowsExceptionWhenSKUNotFound() {
+        public void Scan_ThrowsExceptionWhenSKUNotFound() {
             // Arrange
             var readOnlyPrices = GetMockedPrices();
             var discounts = GetMockedDiscounts();
@@ -92,6 +92,20 @@ namespace KATA.Services.Tests {
 
             // Act & Assert
             Assert.Throws<SKUNotFoundException>(() => service.Scan("B", 1));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(-23454)]
+        public void Scan_ThrowsExceptionWhenAmountIsZeroOrLess(int amount) {
+            // Arrange
+            var readOnlyPrices = GetMockedPrices();
+            var discounts = GetMockedDiscounts();
+            var service = GetService(readOnlyPrices, discounts);
+
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => service.Scan("A", amount));
         }
 
         [Fact]

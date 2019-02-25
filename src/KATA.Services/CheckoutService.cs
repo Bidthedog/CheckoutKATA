@@ -44,6 +44,10 @@ namespace KATA.Services {
         /// <param name="sku"></param>
         /// <param name="amount"></param>
         public void Scan(string sku, int amount) {
+            if(amount <= 0) {
+                throw new ArgumentOutOfRangeException(nameof(amount), "amount must be greater than zero");
+            }
+
             if(_prices.ContainsKey(sku)) {
                 if(!_cart.ContainsKey(sku)) {
                     _cart.Add(sku, amount);
