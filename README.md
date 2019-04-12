@@ -12,7 +12,7 @@ Granular commits are for demonstration purposes only; commits would normally con
 
 Implement the code for a checkout system that handles pricing schemes such as "pineapples cost 50, three pineapples cost 130."
 
-Implement the code for a supermarket checkout that calculates the total price of a number of items. In a normal supermarket, things are identified using Stock Keeping Units, or SKUs. In our store, we’ll use individual letters of the alphabet (A, B, C, and so on). Our goods are priced individually. In addition, some items are multi-priced: buy n of them, and they’ll cost you y pence. For example, item A might cost 50 individually, but this week we have a special offer: buy three As and they’ll cost you 130. In fact the prices are:
+Implement the code for a supermarket checkout that calculates the total price of a number of items. In a normal supermarket, things are identified using Stock Keeping Units, or SKUs. In our store, weâ€™ll use individual letters of the alphabet (A, B, C, and so on). Our goods are priced individually. In addition, some items are multi-priced: buy n of them, and theyâ€™ll cost you y pence. For example, item A might cost 50 individually, but this week we have a special offer: buy three As and theyâ€™ll cost you 130. In fact the prices are:
 
 | SKU  | Unit Price | Special Price |
 | ---- | ---------- | ------------- |
@@ -21,7 +21,7 @@ Implement the code for a supermarket checkout that calculates the total price of
 | C    | 20         |               |
 | D    | 15         |               |
 
-The checkout accepts items in any order, so that if we scan a B, an A, and another B, we’ll recognize the two Bs and price them at 45 (for a total price so far of 95). **The pricing changes frequently, so pricing should be independent of the checkout.**
+The checkout accepts items in any order, so that if we scan a B, an A, and another B, weâ€™ll recognize the two Bs and price them at 45 (for a total price so far of 95). **The pricing changes frequently, so pricing should be independent of the checkout.**
 
 The interface to the checkout could look like:
 
@@ -47,4 +47,4 @@ When submitting your kata we are specifically looking for:
 - Frequent commits to a repositiory on Github (so we can see _how_ you got to the solution, considering the first 2 points above)
 - A README.md if your solution has any specific setup instructions
 
-Don't spend too long on providing your solution - we find a couple of hours is usually suffice.
+Don't spend too long on providing your solution - we find a couple of hours will usually suffice.
